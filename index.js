@@ -1,9 +1,18 @@
 import express from 'express';
-import { launch } from 'puppeteer';
+import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
 
 let screenshotCounter = 0;
 
+// Флаг для включения/выключения скриншотов (по умолчанию включено)
+const ENABLE_SCREENSHOTS = process.env.DISABLE_SCREENSHOTS !== 'false';
+
 async function captureScreenshot(page, description) {
+  if (!ENABLE_SCREENSHOTS) {
+    console.log('Скриншоты отключены.');
+    return;
+  }
+
   // Увеличиваем счетчик на каждом шаге
   screenshotCounter++;
 
@@ -21,9 +30,15 @@ async function loginAndCapture() {
   try {
     console.log('01. Инициализация браузера...');
 
-    const browser = await launch({ headless: false });
-    const page = await browser.newPage();
+    // Запуск браузера с использованием @sparticuz/chromium
+    const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: await chromium.executablePath(), // Путь к браузеру Chrome
+      args: chromium.args, // Аргументы для запуска браузера
+      defaultViewport: chromium.defaultViewport, // Настройки по умолчанию для окна
+    });
 
+    const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
 
     // Открытие страницы
