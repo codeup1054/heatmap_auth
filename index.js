@@ -1,6 +1,6 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
-import chromium from '@sparticuz/chromium';
+// import chromium from '@sparticuz/chromium';
 
 let screenshotCounter = 0;
 
